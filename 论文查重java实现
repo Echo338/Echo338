@@ -1,0 +1,64 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class PaperChecker {
+    public static void main(String[] args) {
+        String originalFilePath = args[0];
+        String plagiarizedFilePath = args[1];
+        String resultFilePath = args[2];
+
+        try {
+            List<String> originalSentences = readSentences(originalFilePath);
+            List<String> plagiarizedSentences = readSentences(plagiarizedFilePath);
+
+            int plagiarizedSentenceCount = plagiarizedSentences.size();
+            int originalSentenceCount = originalSentences.size();
+
+            int similarSentenceCount = 0;
+            for (int i = 0; i < plagiarizedSentenceCount; i++) {
+                String plagiarizedSentence = plagiarizedSentences.get(i);
+                for (int j = 0; j < originalSentenceCount; j++) {
+                    String originalSentence = originalSentences.get(j);
+                    if (isSimilar(plagiarizedSentence, originalSentence)) {
+                        similarSentenceCount++;
+                        break;
+                    }
+                }
+            }
+
+            double similarityRatio = (double) similarSentenceCount / plagiarizedSentenceCount * 100;
+            System.out.println("Similarity ratio: " + similarityRatio + "%");
+
+            writeResultToFile(resultFilePath, similarityRatio);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static List<String> readSentences(String filePath) throws IOException {
+        List<String> sentences = new ArrayList<>();
+        BufferedReader reader = new BufferedReader(new FileReader(filePath));
+        String line;
+        while ((line = reader.readLine()) != null) {
+            sentences.add(line.toLowerCase().replaceAll("[^\\w\\s]", ""));
+        }
+        reader.close();
+        return sentences;
+    }
+
+    private static boolean isSimilar(String sentence1, String sentence2) {
+        // TODO: Implement similarity check
+        return false;
+    }
+
+    private static void writeResultToFile(String filePath, double similarityRatio) throws IOException {
+        FileWriter writer = new FileWriter(filePath);
+        writer.write("Similarity ratio: " + similarityRatio + "%");
+        writer.close();
+    }
+}
